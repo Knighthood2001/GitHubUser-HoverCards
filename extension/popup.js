@@ -1,5 +1,6 @@
 // 默认Markdown模板
-const DEFAULT_TEMPLATE = `### 🏆 GitHub成就
+const DEFAULT_TEMPLATE = `
+### 🏆 GitHub成就
 ![GitHub Stats](https://github-readme-stats.vercel.app/api?username={username}&theme=dark&show_icons=true&hide_border=true)
 `;
 

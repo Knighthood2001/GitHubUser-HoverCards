@@ -8,33 +8,6 @@ function createPopupElement() {
   const popup = document.createElement('div');
   popup.className = 'gh-user-popup';
   popup.innerHTML = `
-    <div class="gh-user-header">
-      <img class="gh-user-avatar" src="" alt="User Avatar">
-      <div class="gh-user-info">
-        <h3 class="gh-username"></h3>
-        <p class="gh-name"></p>
-      </div>
-    </div>
-    
-    <div class="gh-stats-grid">
-      <div class="gh-stat-item">
-        <div class="gh-stat-value gh-repos">0</div>
-        <div class="gh-stat-label">仓库</div>
-      </div>
-      <div class="gh-stat-item">
-        <div class="gh-stat-value gh-gists">0</div>
-        <div class="gh-stat-label">代码片段</div>
-      </div>
-      <div class="gh-stat-item">
-        <div class="gh-stat-value gh-followers">0</div>
-        <div class="gh-stat-label">关注者</div>
-      </div>
-      <div class="gh-stat-item">
-        <div class="gh-stat-value gh-following">0</div>
-        <div class="gh-stat-label">正在关注</div>
-      </div>
-    </div>
-    
     <div class="gh-markdown-content"></div>
   `;
   document.body.appendChild(popup);
@@ -60,14 +33,7 @@ async function showUserPopup(username, x, y, popup) {
   if (!userData) return;
   
   // 更新弹窗内容
-  popup.querySelector('.gh-username').textContent = userData.login;
-  popup.querySelector('.gh-name').textContent = userData.name || '';
-  popup.querySelector('.gh-user-avatar').src = userData.avatar_url;
-  popup.querySelector('.gh-repos').textContent = userData.public_repos;
-  popup.querySelector('.gh-gists').textContent = userData.public_gists;
-  popup.querySelector('.gh-followers').textContent = userData.followers;
-  popup.querySelector('.gh-following').textContent = userData.following;
-  
+
   // 获取并渲染Markdown模板
   chrome.storage.sync.get(['markdownTemplate'], function(result) {
     const template = result.markdownTemplate || DEFAULT_TEMPLATE;

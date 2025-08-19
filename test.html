@@ -381,33 +381,7 @@
                 </div>
                 
                 <div class="popup-card" id="userPopup">
-                    <div class="user-header">
-                        <img id="popupAvatar" class="user-avatar" src="" alt="User Avatar">
-                        <div class="user-info">
-                            <h3 id="popupUsername"></h3>
-                            <p id="popupName"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" id="popupRepos">0</div>
-                            <div class="stat-label">仓库</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="popupGists">0</div>
-                            <div class="stat-label">代码片段</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="popupFollowers">0</div>
-                            <div class="stat-label">关注者</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="popupFollowing">0</div>
-                            <div class="stat-label">正在关注</div>
-                        </div>
-                    </div>
-                    
+                    <!-- 这里就是用户卡片的内容 -->
                     <div class="markdown-content" id="markdownContent"></div>
                 </div>
             </div>
@@ -421,16 +395,7 @@
                         <label for="markdownTemplate">Markdown模板内容</label>
                         <textarea id="markdownTemplate">### 🏆 GitHub成就
 ![GitHub Stats](https://github-readme-stats.vercel.app/api?username={username}&theme=vue&show_icons=true&hide_border=true)
-
-### 🔭 最近项目
-- [项目1](https://github.com/{username}/repo1)
-- [项目2](https://github.com/{username}/repo2)
-- [项目3](https://github.com/{username}/repo3)
-
-### 🌱 正在学习
-- 技术1
-- 技术2
-- 技术3</textarea>
+</textarea>
                     </div>
                     
                     <button type="button" class="preview-btn" id="previewBtn">
@@ -520,16 +485,7 @@
             
             // 显示用户弹窗
             function showUserPopup(username, x, y) {
-                const user = userData[username] || {};
-                
-                document.getElementById('popupUsername').textContent = username;
-                document.getElementById('popupName').textContent = user.name || '';
-                document.getElementById('popupAvatar').src = user.avatar || '';
-                document.getElementById('popupRepos').textContent = user.repos || 0;
-                document.getElementById('popupGists').textContent = user.gists || 0;
-                document.getElementById('popupFollowers').textContent = user.followers || 0;
-                document.getElementById('popupFollowing').textContent = user.following || 0;
-                
+                const user = userData[username] || {};       
                 // 渲染Markdown内容
                 const template = markdownTemplate.value;
                 const userContent = template.replace(/{username}/g, username);
