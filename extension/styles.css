@@ -1,0 +1,135 @@
+  .gh-user-popup {
+    position: absolute;
+    width: 320px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  
+  .gh-user-popup.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  .gh-user-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .gh-user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #30363d;
+  }
+  
+  .gh-user-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+    color: #c9d1d9;
+  }
+  
+  .gh-user-info p {
+    color: #8b949e;
+    font-size: 0.95rem;
+  }
+  
+  .gh-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    margin: 1.5rem 0;
+  }
+  
+  .gh-stat-item {
+    background: rgba(22, 27, 34, 0.6);
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 0.8rem;
+    text-align: center;
+  }
+  
+  .gh-stat-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #58a6ff;
+  }
+  
+  .gh-stat-label {
+    font-size: 0.85rem;
+    color: #8b949e;
+    margin-top: 0.3rem;
+  }
+  
+  .gh-markdown-content {
+    border-top: 1px solid #21262d;
+    padding-top: 1.2rem;
+    margin-top: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  
+  .gh-markdown-content h1, .gh-markdown-content h2, .gh-markdown-content h3, 
+  .gh-markdown-content h4, .gh-markdown-content h5, .gh-markdown-content h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #58a6ff;
+  }
+  
+  .gh-markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  
+  .gh-markdown-content a {
+    color: #58a6ff;
+    text-decoration: none;
+  }
+  
+  .gh-markdown-content a:hover {
+    text-decoration: underline;
+  }
+  
+  .gh-markdown-content ul, .gh-markdown-content ol {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  .gh-markdown-content li {
+    margin-bottom: 0.3rem;
+  }
+  
+  .gh-markdown-content code {
+    background: rgba(110, 118, 129, 0.4);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  
+  .gh-markdown-content pre {
+    background: rgba(22, 27, 34, 0.8);
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  
+  .gh-markdown-content pre code {
+    background: transparent;
+    padding: 0;
+  }

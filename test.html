@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub用户信息悬停扩展</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1f25, #0d1117);
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(13, 17, 23, 0.6);
+            border-radius: 16px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #58a6ff, #8a63d2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            color: #8b949e;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature {
+            background: rgba(22, 27, 34, 0.7);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature i {
+            color: #58a6ff;
+        }
+        
+        .demo-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+        
+        .demo-container, .config-container {
+            flex: 1;
+            min-width: 300px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #58a6ff;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .section-title i {
+            font-size: 1.6rem;
+        }
+        
+        .github-user-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #58a6ff;
+            text-decoration: none;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .github-user-link:hover {
+            background: #1f6feb;
+            color: white;
+            border-color: #1f6feb;
+            transform: translateY(-2px);
+        }
+        
+        .github-user-link img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .popup-card {
+            position: absolute;
+            width: 320px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .popup-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #30363d;
+        }
+        
+        .user-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-info p {
+            color: #8b949e;
+            font-size: 0.95rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-item {
+            background: rgba(22, 27, 34, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-top: 0.3rem;
+        }
+        
+        .markdown-content {
+            border-top: 1px solid #21262d;
+            padding-top: 1.2rem;
+            margin-top: 1.2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .markdown-content h4 {
+            margin: 1rem 0 0.5rem;
+            color: #58a6ff;
+        }
+        
+        .config-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        label {
+            font-weight: 500;
+            color: #c9d1d9;
+            font-size: 1.05rem;
+        }
+        
+        textarea {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #c9d1d9;
+            font-size: 0.95rem;
+            min-height: 200px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #1f6feb;
+        }
+        
+        .preview-btn {
+            background: #238636;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .preview-btn:hover {
+            background: #2ea043;
+        }
+        
+        .instructions {
+            background: rgba(22, 27, 34, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .instructions h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #58a6ff;
+        }
+        
+        .instructions ul {
+            padding-left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .instructions li {
+            line-height: 1.6;
+        }
+        
+        .instructions code {
+            background: rgba(110, 118, 129, 0.4);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            color: #8b949e;
+            font-size: 0.95rem;
+            border-top: 1px solid #30363d;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-section {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fab fa-github"></i> GitHub用户信息悬停扩展</h1>
+            <p class="subtitle">在GitHub上悬停用户链接时，即时显示包含统计信息和自定义Markdown内容的用户卡片</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-code"></i>
+                    <span>动态渲染Markdown内容</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-user-tag"></i>
+                    <span>自动替换用户名占位符</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-palette"></i>
+                    <span>完全可定制的模板</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <span>平滑的悬停动画</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="demo-section">
+            <div class="demo-container">
+                <h2 class="section-title"><i class="fas fa-desktop"></i> 实时演示</h2>
+                <p>将鼠标悬停在下面的用户链接上查看效果：</p>
+                
+                <div style="margin: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 1rem;">
+                    <a href="#" class="github-user-link" data-username="Knighthood2001">
+                        <img src="https://avatars.githubusercontent.com/u/86189731?v=4" alt="Knighthood2001">
+                        <span>Knighthood2001</span>
+                    </a>
+                    <a href="#" class="github-user-link" data-username="octocat">
+                        <img src="https://avatars.githubusercontent.com/u/583231?v=4" alt="octocat">
+                        <span>Octocat</span>
+                    </a>
+                    <a href="#" class="github-user-link" data-username="torvalds">
+                        <img src="https://avatars.githubusercontent.com/u/1024025?v=4" alt="torvalds">
+                        <span>Linus Torvalds</span>
+                    </a>
+                </div>
+                
+                <div class="popup-card" id="userPopup">
+                    <div class="user-header">
+                        <img id="popupAvatar" class="user-avatar" src="" alt="User Avatar">
+                        <div class="user-info">
+                            <h3 id="popupUsername"></h3>
+                            <p id="popupName"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="popupRepos">0</div>
+                            <div class="stat-label">仓库</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="popupGists">0</div>
+                            <div class="stat-label">代码片段</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="popupFollowers">0</div>
+                            <div class="stat-label">关注者</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="popupFollowing">0</div>
+                            <div class="stat-label">正在关注</div>
+                        </div>
+                    </div>
+                    
+                    <div class="markdown-content" id="markdownContent"></div>
+                </div>
+            </div>
+            
+            <div class="config-container">
+                <h2 class="section-title"><i class="fas fa-sliders-h"></i> Markdown模板配置</h2>
+                <p>自定义显示在用户卡片中的Markdown内容：</p>
+                
+                <form class="config-form" id="templateForm">
+                    <div class="form-group">
+                        <label for="markdownTemplate">Markdown模板内容</label>
+                        <textarea id="markdownTemplate">### 🏆 GitHub成就
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username={username}&theme=vue&show_icons=true&hide_border=true)
+
+### 🔭 最近项目
+- [项目1](https://github.com/{username}/repo1)
+- [项目2](https://github.com/{username}/repo2)
+- [项目3](https://github.com/{username}/repo3)
+
+### 🌱 正在学习
+- 技术1
+- 技术2
+- 技术3</textarea>
+                    </div>
+                    
+                    <button type="button" class="preview-btn" id="previewBtn">
+                        <i class="fas fa-eye"></i> 更新预览
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>扩展使用说明</h3>
+            <ul>
+                <li>在GitHub页面中，当鼠标悬停在用户链接上时，会自动显示用户信息卡片</li>
+                <li>使用 <code>{username}</code> 作为占位符，系统会自动替换为实际的GitHub用户名</li>
+                <li>卡片支持完整的Markdown渲染，包括图片、链接、列表等元素</li>
+                <li>卡片位置会智能调整，避免超出屏幕边界</li>
+                <li>在真实扩展中，用户统计信息将通过GitHub API实时获取</li>
+                <li>配置会自动保存，下次访问时无需重新设置</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>GitHub用户信息悬停扩展 &copy; 2023 - 浏览器扩展原型演示</p>
+        <p>此页面为功能演示，实际扩展将以浏览器插件形式运行在GitHub网站上</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userLinks = document.querySelectorAll('.github-user-link');
+            const popup = document.getElementById('userPopup');
+            const markdownContent = document.getElementById('markdownContent');
+            const markdownTemplate = document.getElementById('markdownTemplate');
+            const previewBtn = document.getElementById('previewBtn');
+            
+            // 用户数据（模拟API响应）
+            const userData = {
+                'Knighthood2001': {
+                    name: 'Knighthood',
+                    avatar: 'https://avatars.githubusercontent.com/u/56552015?v=4',
+                    repos: 42,
+                    gists: 18,
+                    followers: 120,
+                    following: 56
+                },
+                'octocat': {
+                    name: 'The Octocat',
+                    avatar: 'https://avatars.githubusercontent.com/u/583231?v=4',
+                    repos: 8,
+                    gists: 3,
+                    followers: 7845,
+                    following: 9
+                },
+                'torvalds': {
+                    name: 'Linus Torvalds',
+                    avatar: 'https://avatars.githubusercontent.com/u/1024025?v=4',
+                    repos: 6,
+                    gists: 0,
+                    followers: 172000,
+                    following: 0
+                }
+            };
+            
+            // 初始渲染
+            renderMarkdown();
+            
+            // 用户链接悬停事件
+            userLinks.forEach(link => {
+                link.addEventListener('mouseenter', function(e) {
+                    const username = this.getAttribute('data-username');
+                    showUserPopup(username, e.clientX, e.clientY);
+                });
+                
+                link.addEventListener('mousemove', function(e) {
+                    if (popup.classList.contains('visible')) {
+                        positionPopup(e.clientX, e.clientY);
+                    }
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    hideUserPopup();
+                });
+            });
+            
+            // 预览按钮事件
+            previewBtn.addEventListener('click', renderMarkdown);
+            
+            // 显示用户弹窗
+            function showUserPopup(username, x, y) {
+                const user = userData[username] || {};
+                
+                document.getElementById('popupUsername').textContent = username;
+                document.getElementById('popupName').textContent = user.name || '';
+                document.getElementById('popupAvatar').src = user.avatar || '';
+                document.getElementById('popupRepos').textContent = user.repos || 0;
+                document.getElementById('popupGists').textContent = user.gists || 0;
+                document.getElementById('popupFollowers').textContent = user.followers || 0;
+                document.getElementById('popupFollowing').textContent = user.following || 0;
+                
+                // 渲染Markdown内容
+                const template = markdownTemplate.value;
+                const userContent = template.replace(/{username}/g, username);
+                markdownContent.innerHTML = marked.parse(userContent);
+                
+                // 定位并显示弹窗
+                positionPopup(x, y);
+                popup.classList.add('visible');
+            }
+            
+            // 隐藏用户弹窗
+            function hideUserPopup() {
+                popup.classList.remove('visible');
+            }
+            
+            // 定位弹窗
+            function positionPopup(x, y) {
+                // 防止弹窗超出屏幕
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const popupWidth = popup.offsetWidth;
+                const popupHeight = popup.offsetHeight;
+                
+                let posX = x + 20;
+                let posY = y + 20;
+                
+                // 右侧空间不足
+                if (x + popupWidth + 40 > viewportWidth) {
+                    posX = x - popupWidth - 20;
+                }
+                
+                // 底部空间不足
+                if (y + popupHeight + 40 > viewportHeight) {
+                    posY = y - popupHeight - 20;
+                }
+                
+                popup.style.left = `${posX}px`;
+                popup.style.top = `${posY}px`;
+            }
+            
+            // 渲染Markdown预览
+            function renderMarkdown() {
+                const template = markdownTemplate.value;
+                const previewContent = template.replace(/{username}/g, 'Knighthood2001');
+                markdownContent.innerHTML = marked.parse(previewContent);
+            }
+            
+            // 点击弹窗外部关闭
+            document.addEventListener('click', function(e) {
+                if (popup.classList.contains('visible') && 
+                    !popup.contains(e.target) &&
+                    !Array.from(userLinks).some(link => link.contains(e.target))) {
+                    hideUserPopup();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

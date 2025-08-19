@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "GitHub用户信息悬停扩展",
+    "version": "1.0",
+    "description": "在GitHub上悬停用户链接时，显示自定义Markdown卡片",
+    "permissions": ["storage"],
+    "host_permissions": ["https://github.com/*", "https://api.github.com/*"],
+    "content_scripts": [
+      {
+        "matches": ["https://github.com/*"],
+        "js": ["marked.min.js", "content.js"],
+        "css": ["styles.css"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+      }
+    },
+    "icons": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  }
